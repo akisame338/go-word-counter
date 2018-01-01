@@ -1,14 +1,15 @@
 package main
 
 import (
-    "fmt"
+    "net/http"
     "github.com/ikawaha/kagome/tokenizer"
+    "github.com/gin-gonic/gin"
 )
 
-func main() {
+func getWordCount(text string) (map[string]int) {
     dic := tokenizer.SysDicSimple()
     t := tokenizer.NewWithDic(dic)
-    tokens := t.Tokenize("すもももももももものうち")
+    tokens := t.Tokenize(text)
     words := map[string]int{}
     for _, token := range tokens {
         features := token.Features()
@@ -26,7 +27,18 @@ func main() {
         }
     }
 
-    for word, count := range words {
-        fmt.Printf("%s\t%d\n", word, count)
-    }
+    return words
+}
+
+func main() {
+    router := gin.Default()
+    router.LoadHTMLFiles("index.tpl")
+
+    router.GET("/", func(context *gin.Context) {
+        context.HTML(http.StatusOK, "index.tpl", gin.H{
+            "wordCount": getWordCount("すもももももももものうち"),
+        })
+    })
+
+    router.Run()
 }
