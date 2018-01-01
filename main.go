@@ -35,8 +35,13 @@ func main() {
     router.LoadHTMLFiles("index.tpl")
 
     router.GET("/", func(context *gin.Context) {
+        context.HTML(http.StatusOK, "index.tpl", gin.H{})
+    })
+
+    router.POST("/", func(context *gin.Context) {
+        text := context.PostForm("text")
         context.HTML(http.StatusOK, "index.tpl", gin.H{
-            "wordCount": getWordCount("すもももももももものうち"),
+            "wordCount": getWordCount(text),
         })
     })
 
